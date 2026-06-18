@@ -1,0 +1,691 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+--bg0:#0f1117;--bg1:#161b27;--bg2:#1e2536;--bg3:#252d40;--bg4:#2e3854;
+--amber:#f5a623;--amber2:#ffc85c;--amber-dim:#7d5400;
+--green:#2ecc71;--green2:#55e891;--green-dim:#0e5c2f;
+--red:#e74c3c;--red2:#ff6b5e;--red-dim:#6b1a14;
+--blue:#4a9eff;--blue2:#7dbeff;--blue-dim:#0d3d6e;
+--purple:#a78bfa;--cyan:#22d3ee;
+--text1:#f0f2f8;--text2:#9ba8c4;--text3:#5c6a8a;
+--border:#2a3354;--border2:#3d4f7c;
+--font:'Segoe UI',system-ui,sans-serif;
+}
+body{background:transparent;color:var(--text1);font-family:var(--font);font-size:13px;line-height:1.5}
+h2{font-size:16px;font-weight:600;color:var(--text1)}
+
+.dash{background:var(--bg0);border-radius:16px;padding:0;overflow:hidden;border:1px solid var(--border)}
+
+.topbar{background:var(--bg1);border-bottom:1px solid var(--border);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+.brand{display:flex;align-items:center;gap:10px}
+.brand-icon{width:36px;height:36px;background:linear-gradient(135deg,var(--amber),var(--amber2));border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px}
+.brand-text{font-size:15px;font-weight:700;color:var(--text1)}
+.brand-sub{font-size:11px;color:var(--text2)}
+.topbar-right{display:flex;align-items:center;gap:12px}
+.status-dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.live-badge{font-size:11px;color:var(--green);font-weight:600}
+.ts{font-size:11px;color:var(--text3)}
+
+.tabs{background:var(--bg1);border-bottom:1px solid var(--border);padding:0 20px;display:flex;gap:0;overflow-x:auto}
+.tab{padding:12px 18px;font-size:12px;font-weight:600;color:var(--text2);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:all .2s;letter-spacing:.4px;text-transform:uppercase}
+.tab:hover{color:var(--text1);background:rgba(255,255,255,.03)}
+.tab.active{color:var(--amber);border-bottom-color:var(--amber)}
+
+.panel{display:none;padding:20px;gap:16px;flex-direction:column}
+.panel.active{display:flex}
+
+.kpi-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px}
+.kpi{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:14px 16px;position:relative;overflow:hidden;cursor:default}
+.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.kpi.amber::before{background:linear-gradient(90deg,var(--amber),var(--amber2))}
+.kpi.green::before{background:linear-gradient(90deg,var(--green),var(--green2))}
+.kpi.red::before{background:linear-gradient(90deg,var(--red),var(--red2))}
+.kpi.blue::before{background:linear-gradient(90deg,var(--blue),var(--blue2))}
+.kpi.purple::before{background:linear-gradient(90deg,var(--purple),#c4b5fd)}
+.kpi.cyan::before{background:linear-gradient(90deg,var(--cyan),#67e8f9)}
+.kpi-label{font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:.6px;font-weight:600;margin-bottom:6px}
+.kpi-val{font-size:24px;font-weight:700;line-height:1;margin-bottom:4px}
+.kpi.amber .kpi-val{color:var(--amber2)}
+.kpi.green .kpi-val{color:var(--green2)}
+.kpi.red .kpi-val{color:var(--red2)}
+.kpi.blue .kpi-val{color:var(--blue2)}
+.kpi.purple .kpi-val{color:var(--purple)}
+.kpi.cyan .kpi-val{color:var(--cyan)}
+.kpi-change{font-size:10px;font-weight:600}
+.kpi-change.up{color:var(--green)}
+.kpi-change.down{color:var(--red)}
+.kpi-change.neutral{color:var(--text3)}
+.kpi-icon{position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:28px;opacity:.12}
+
+.charts-row{display:grid;gap:16px}
+.charts-2{grid-template-columns:1fr 1fr}
+.charts-3{grid-template-columns:1fr 1fr 1fr}
+.charts-21{grid-template-columns:2fr 1fr}
+.charts-12{grid-template-columns:1fr 2fr}
+@media(max-width:680px){.charts-2,.charts-3,.charts-21,.charts-12{grid-template-columns:1fr}}
+
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:16px}
+.card-title{font-size:12px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.6px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between}
+.card-title-left{display:flex;align-items:center;gap:8px}
+.card-dot{width:8px;height:8px;border-radius:50%}
+.card-dot.amber{background:var(--amber)}
+.card-dot.green{background:var(--green)}
+.card-dot.red{background:var(--red)}
+.card-dot.blue{background:var(--blue)}
+.card-dot.purple{background:var(--purple)}
+.card-dot.cyan{background:var(--cyan)}
+
+.badge{font-size:10px;padding:2px 8px;border-radius:20px;font-weight:600}
+.badge.green{background:rgba(46,204,113,.15);color:var(--green2)}
+.badge.red{background:rgba(231,76,60,.15);color:var(--red2)}
+.badge.amber{background:rgba(245,166,35,.15);color:var(--amber2)}
+.badge.blue{background:rgba(74,158,255,.15);color:var(--blue2)}
+
+.chart-wrap{position:relative;width:100%}
+
+.table-wrap{overflow-x:auto;border-radius:8px}
+table{width:100%;border-collapse:collapse;font-size:11px}
+thead tr{background:var(--bg3)}
+thead th{padding:8px 10px;text-align:left;color:var(--text2);font-weight:600;text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--border)}
+tbody tr{border-bottom:1px solid rgba(42,51,84,.5);transition:background .15s}
+tbody tr:hover{background:var(--bg3)}
+tbody td{padding:7px 10px;color:var(--text1)}
+.pill{padding:2px 8px;border-radius:20px;font-size:10px;font-weight:600;white-space:nowrap}
+.pill-green{background:rgba(46,204,113,.15);color:var(--green2)}
+.pill-red{background:rgba(231,76,60,.15);color:var(--red2)}
+.pill-amber{background:rgba(245,166,35,.15);color:var(--amber2)}
+.pill-blue{background:rgba(74,158,255,.15);color:var(--blue2)}
+.pill-gray{background:rgba(155,168,196,.1);color:var(--text2)}
+
+.gauge-wrap{display:flex;flex-direction:column;align-items:center;gap:6px;padding:8px 0}
+.gauge-label{font-size:10px;color:var(--text2);text-align:center;text-transform:uppercase;letter-spacing:.5px;font-weight:600}
+
+.heatmap-grid{display:grid;grid-template-columns:80px repeat(6,1fr);gap:3px;font-size:10px}
+.hm-header{color:var(--text3);text-align:center;padding:4px 2px;font-weight:600;text-transform:uppercase;letter-spacing:.4px}
+.hm-label{color:var(--text2);display:flex;align-items:center;font-weight:500;font-size:10px}
+.hm-cell{border-radius:4px;padding:6px 4px;text-align:center;font-weight:600;font-size:10px;cursor:default;transition:transform .15s}
+.hm-cell:hover{transform:scale(1.08)}
+
+.alert-row{display:flex;flex-direction:column;gap:6px}
+.alert{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;border-radius:8px;border-left:3px solid}
+.alert.critical{background:rgba(231,76,60,.1);border-color:var(--red);color:var(--red2)}
+.alert.warning{background:rgba(245,166,35,.1);border-color:var(--amber);color:var(--amber2)}
+.alert.info{background:rgba(74,158,255,.1);border-color:var(--blue);color:var(--blue2)}
+.alert.success{background:rgba(46,204,113,.1);border-color:var(--green);color:var(--green2)}
+.alert-icon{font-size:14px;margin-top:1px}
+.alert-text{flex:1}
+.alert-title{font-weight:700;font-size:11px;margin-bottom:2px}
+.alert-desc{font-size:10px;opacity:.8}
+.alert-time{font-size:9px;opacity:.5;margin-top:3px}
+
+.progress-item{margin-bottom:10px}
+.progress-header{display:flex;justify-content:space-between;margin-bottom:5px;font-size:11px}
+.progress-label{color:var(--text1);font-weight:500}
+.progress-val{color:var(--text2)}
+.progress-bar{height:6px;background:var(--bg3);border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;border-radius:3px;transition:width .8s ease}
+
+.legend{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:10px}
+.legend-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text2)}
+.legend-swatch{width:10px;height:10px;border-radius:2px}
+
+.oee-ring{position:relative;display:inline-flex;align-items:center;justify-content:center}
+.oee-center{position:absolute;text-align:center}
+.oee-center-val{font-size:20px;font-weight:700;color:var(--amber2)}
+.oee-center-label{font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px}
+
+.filter-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:0 0 4px}
+.filter-row select{background:var(--bg3);color:var(--text1);border:1px solid var(--border2);border-radius:6px;padding:5px 10px;font-size:11px;cursor:pointer;outline:none}
+.filter-row select:focus{border-color:var(--amber)}
+.filter-label{font-size:11px;color:var(--text2);font-weight:600}
+</style>
+
+<div class="dash" role="main" aria-label="Food Manufacturing Intelligence Dashboard">
+
+<div class="topbar">
+  <div class="brand">
+    <div class="brand-icon">&#127828;</div>
+    <div>
+      <div class="brand-text">FoodIntel Analytics</div>
+      <div class="brand-sub">Biscuit &amp; Beverage Manufacturing — Bangladesh Operations</div>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <div class="status-dot"></div>
+    <span class="live-badge">LIVE</span>
+    <span class="ts" id="liveTs">Loading...</span>
+  </div>
+</div>
+
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('overview')">&#9632; Overview</div>
+  <div class="tab" onclick="switchTab('production')">&#9632; Production</div>
+  <div class="tab" onclick="switchTab('quality')">&#9632; Quality Control</div>
+  <div class="tab" onclick="switchTab('maintenance')">&#9632; Maintenance</div>
+  <div class="tab" onclick="switchTab('energy')">&#9632; Energy</div>
+  <div class="tab" onclick="switchTab('sales')">&#9632; Sales &amp; Demand</div>
+  <div class="tab" onclick="switchTab('safety')">&#9632; Food Safety</div>
+</div>
+
+<!-- ═══════════ OVERVIEW ═══════════ -->
+<div id="tab-overview" class="panel active">
+  <div class="kpi-row">
+    <div class="kpi amber"><div class="kpi-label">Overall OEE</div><div class="kpi-val" id="kv-oee">78.4%</div><div class="kpi-change up">&#9650; +2.3% MoM</div><div class="kpi-icon">&#9881;</div></div>
+    <div class="kpi green"><div class="kpi-label">Quality Pass</div><div class="kpi-val">96.2%</div><div class="kpi-change up">&#9650; +0.8%</div><div class="kpi-icon">&#10003;</div></div>
+    <div class="kpi blue"><div class="kpi-label">Avg Yield</div><div class="kpi-val">92.7%</div><div class="kpi-change up">&#9650; +1.1%</div><div class="kpi-icon">&#9654;</div></div>
+    <div class="kpi red"><div class="kpi-label">Downtime</div><div class="kpi-val">6.8%</div><div class="kpi-change down">&#9660; +0.4%</div><div class="kpi-icon">&#9888;</div></div>
+    <div class="kpi purple"><div class="kpi-label">Revenue (M BDT)</div><div class="kpi-val">24.6</div><div class="kpi-change up">&#9650; +8.2%</div><div class="kpi-icon">&#9650;</div></div>
+    <div class="kpi cyan"><div class="kpi-label">Energy / kg</div><div class="kpi-val">0.52</div><div class="kpi-change down">&#9660; -3.1%</div><div class="kpi-icon">&#9889;</div></div>
+  </div>
+
+  <div class="charts-row charts-21">
+    <div class="card">
+      <div class="card-title"><div class="card-title-left"><span class="card-dot amber"></span>Monthly OEE &amp; Efficiency Trend</div><span class="badge green">24 months</span></div>
+      <div class="legend">
+        <div class="legend-item"><div class="legend-swatch" style="background:var(--amber)"></div>OEE %</div>
+        <div class="legend-item"><div class="legend-swatch" style="background:var(--blue)"></div>Efficiency %</div>
+        <div class="legend-item"><div class="legend-swatch" style="background:var(--green)"></div>Yield %</div>
+      </div>
+      <div class="chart-wrap" style="height:240px"><canvas id="c-oee-trend" role="img" aria-label="Monthly OEE and efficiency trend over 24 months">OEE averages 78%, efficiency 89%, yield 93%.</canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title"><div class="card-title-left"><span class="card-dot red"></span>Active Alerts</div><span class="badge red">4 critical</span></div>
+      <div class="alert-row">
+        <div class="alert critical"><div class="alert-icon">&#9888;</div><div class="alert-text"><div class="alert-title">M-103 — Bearing Vibration High</div><div class="alert-desc">Vibration exceeds threshold 2.8×. Schedule immediate inspection.</div><div class="alert-time">2 min ago</div></div></div>
+        <div class="alert critical"><div class="alert-icon">&#9888;</div><div class="alert-text"><div class="alert-title">Batch B47821 — Moisture OOS</div><div class="alert-desc">Moisture 8.2% (limit 7.5%). QC hold issued. Line-2 suspended.</div><div class="alert-time">14 min ago</div></div></div>
+        <div class="alert warning"><div class="alert-icon">&#8987;</div><div class="alert-text"><div class="alert-title">Wheat Flour — Below Reorder Point</div><div class="alert-desc">Stock 1,840 kg vs reorder level 2,500 kg. PO required urgently.</div><div class="alert-time">1 hr ago</div></div></div>
+        <div class="alert warning"><div class="alert-icon">&#9651;</div><div class="alert-text"><div class="alert-title">SupplierC — Quality Score Drop</div><div class="alert-desc">Last 3 lots averaged 71.2 (threshold 75). Consider alternative.</div><div class="alert-time">3 hr ago</div></div></div>
+        <div class="alert info"><div class="alert-icon">&#9432;</div><div class="alert-text"><div class="alert-title">Planned Maintenance — M-101 Tomorrow</div><div class="alert-desc">8-hour preventive maintenance window. Plan production accordingly.</div><div class="alert-time">5 hr ago</div></div></div>
+        <div class="alert success"><div class="alert-icon">&#10003;</div><div class="alert-text"><div class="alert-title">FSMS Audit Score 94.1% — Passed</div><div class="alert-desc">All CCPs compliant. Certificate renewed for 12 months.</div><div class="alert-time">Yesterday</div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="charts-row charts-3">
+    <div class="card">
+      <div class="card-title"><div class="card-title-left"><span class="card-dot blue"></span>Production by Product</div></div>
+      <div class="chart-wrap" style="height:220px"><canvas id="c-prod-pie" role="img" aria-label="Production share by product">Digestive Biscuit leads at 22%.</canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title"><div class="card-title-left"><span class="card-dot green"></span>KPI Scorecard</div></div>
+      <div style="padding-top:4px">
+        <div class="progress-item"><div class="progress-header"><span class="progress-label">OEE</span><span class="progress-val">78.4%</span></div><div class="progress-bar"><div class="progress-fill" style="width:78.4%;background:var(--amber)"></div></div></div>
+        <div class="progress-item"><div class="progress-header"><span class="progress-label">Quality Pass Rate</span><span class="progress-val">96.2%</span></div><div class="progress-bar"><div class="progress-fill" style="width:96.2%;background:var(--green)"></div></div></div>
+        <div class="progress-item"><div class="progress-header"><span class="progress-label">Supplier Quality Score</span><span class="progress-val">84.5%</span></div><div class="progress-bar"><div class="progress-fill" style="width:84.5%;background:var(--blue)"></div></div></div>
+        <div class="progress-item"><div class="progress-header"><span class="progress-label">CAPA Closure Rate</span><span class="progress-val">88.7%</span></div><div class="progress-bar"><div class="progress-fill" style="width:88.7%;background:var(--purple)"></div></div></div>
+        <div class="progress-item"><div class="progress-header"><span class="progress-label">Audit Score</span><span class="progress-val">91.3%</span></div><div class="progress-bar"><div class="progress-fill" style="width:91.3%;background:var(--cyan)"></div></div></div>
+        <div class="progress-item"><div class="progress-header"><span class="progress-label">Downtime (inverted)</span><span class="progress-val">6.8% &#9660;</span></div><div class="progress-bar"><div class="progress-fill" style="width:31%;background:var(--red)"></div></div></div>
+        <div class="progress-item"><div class="progress-header"><span class="progress-label">Waste %</span><span class="progress-val">3.2% &#9660;</span></div><div class="progress-bar"><div class="progress-fill" style="width:40%;background:var(--red)"></div></div></div>
+        <div class="progress-item"><div class="progress-header"><span class="progress-label">Gross Margin</span><span class="progress-val">31.4%</span></div><div class="progress-bar"><div class="progress-fill" style="width:63%;background:var(--green)"></div></div></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title"><div class="card-title-left"><span class="card-dot amber"></span>Downtime by Reason</div></div>
+      <div class="chart-wrap" style="height:220px"><canvas id="c-dt-reason" role="img" aria-label="Downtime by reason doughnut">Breakdown is largest category at 34%.</canvas></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ PRODUCTION ═══════════ -->
+<div id="tab-production" class="panel">
+  <div class="kpi-row">
+    <div class="kpi amber"><div class="kpi-label">Total Output (kg)</div><div class="kpi-val">1,842k</div><div class="kpi-change up">&#9650; +5.1%</div></div>
+    <div class="kpi blue"><div class="kpi-label">Planned vs Actual</div><div class="kpi-val">89.3%</div><div class="kpi-change up">&#9650; +1.4%</div></div>
+    <div class="kpi green"><div class="kpi-label">Throughput kg/hr</div><div class="kpi-val">412.6</div><div class="kpi-change up">&#9650; +3.8%</div></div>
+    <div class="kpi red"><div class="kpi-label">Reject kg</div><div class="kpi-val">8,740</div><div class="kpi-change down">&#9660; -12%</div></div>
+    <div class="kpi purple"><div class="kpi-label">Best OEE Machine</div><div class="kpi-val">M-102</div><div class="kpi-change neutral">87.4%</div></div>
+  </div>
+
+  <div class="charts-row charts-2">
+    <div class="card">
+      <div class="card-title"><div class="card-title-left"><span class="card-dot amber"></span>Daily Output — Last 30 Days</div></div>
+      <div class="chart-wrap" style="height:220px"><canvas id="c-daily-output" role="img" aria-label="Daily production output over last 30 days">Output averages 1,280 kg/day with seasonal variation.</canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title"><div class="card-title-left"><span class="card-dot blue"></span>OEE by Machine</div></div>
+      <div class="chart-wrap" style="height:220px"><canvas id="c-oee-machine" role="img" aria-label="OEE percentage by machine ID">M-102 leads at 87%, M-104 lowest at 68%.</canvas></div>
+    </div>
+  </div>
+
+  <div class="charts-row charts-21">
+    <div class="card">
+      <div class="card-title"><div class="card-title-left"><span class="card-dot green"></span>Shift-wise Performance Comparison</div></div>
+      <div class="legend">
+        <div class="legend-item"><div class="legend-swatch" style="background:var(--amber)"></div>Morning</div>
+        <div class="legend-item"><div class="legend-swatch" style="background:var(--blue)"></div>Evening</div>
+        <div class="legend-item"><div class="legend-swatch" style="background:var(--purple)"></div>Night</div>
+      </div>
+      <div class="chart-wrap" style="height:220px"><canvas id="c-shift" role="img" aria-label="Shift-wise production and OEE comparison">Morning shift outperforms evening and night shifts.</canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title"><div class="card-title-left"><span class="card-dot red"></span>Waste by Product</div></div>
+      <div class="chart-wrap" style="height:220px"><canvas id="c-waste-prod" role="img" aria-label="Waste percentage by product">Choco Wafer has highest waste at 6.2%.</canvas></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><div class="card-title-left"><span class="card-dot cyan"></span>Production Heatmap — Machine vs Shift OEE %</div></div>
+    <div class="heatmap-grid" id="heatmap-prod"></div>
+    <div style="margin-top:10px;display:flex;align-items:center;gap:8px;font-size:10px;color:var(--text3)">
+      <span>Low</span>
+      <div style="display:flex;gap:2px">
+        <div style="width:16px;height:10px;border-radius:2px;background:#6b1a14"></div>
+        <div style="width:16px;height:10px;border-radius:2px;background:#c0392b"></div>
+        <div style="width:16px;height:10px;border-radius:2px;background:#f39c12"></div>
+        <div style="width:16px;height:10px;border-radius:2px;background:#27ae60"></div>
+        <div style="width:16px;height:10px;border-radius:2px;background:#2ecc71"></div>
+      </div>
+      <span>High</span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ QUALITY ═══════════ -->
+<div id="tab-quality" class="panel">
+  <div class="kpi-row">
+    <div class="kpi green"><div class="kpi-label">Pass Rate</div><div class="kpi-val">96.2%</div><div class="kpi-change up">&#9650; +0.8%</div></div>
+    <div class="kpi red"><div class="kpi-label">Defect Rate</div><div class="kpi-val">3.8%</div><div class="kpi-change down">&#9660; -0.8%</div></div>
+    <div class="kpi amber"><div class="kpi-label">Avg Sensory Score</div><div class="kpi-val">8.1 / 10</div><div class="kpi-change up">&#9650; +0.2</div></div>
+    <div class="kpi blue"><div class="kpi-label">Complaints / 1000</div><div class="kpi-val">2.4</div><div class="kpi-change up">&#9650; Down trend</div></div>
+    <div class="kpi purple"><div class="kpi-label">Microbial Batches OK</div><div class="kpi-val">99.1%</div><div class="kpi-change neutral">Compliant</div></div>
+  </div>
+
+  <div class="charts-row charts-2">
+    <div class="card">
+      <div class="card-title"><div class="card-title-left"><span class="card-dot green"></span>QC Pass/Fail by Product</div></div>
+      <div class="legend">
+        <div class="legend-item"><div class="legend-swatch" style="background:var(--green)"></div>Pass</div>
+        <div class="legend-item"><div class="legend-swatch" style="background:var(--red)"></div>Fail</div>
+      </div>
+      <div class="chart-wrap" style="height:240px"><canvas id="c-qc-pass" role="img" aria-label="QC pass and fail counts by product">Digestive Biscuit has highest pass rate at 97.8%.</canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title"><div class="card-title-left"><span class="card-dot red"></span>Complaint Types — Pareto</div></div>
+      <div class="chart-wrap" style="height:240px"><canvas id="c-pareto" role="img" aria-label="Pareto chart of complaint types">Packaging defects account for 38% of all complaints.</canvas></div>
+    </div>
+  </div>
+
+  <div class="charts-row charts-12">
+    <div class="card">
+      <div class="card-title"><div class="card-title-left"><span class="card-dot amber"></span>Complaint Severity Distribution</div></div>
+      <div class="chart-wrap" style="height:200px"><canvas id="c-severity" role="img" aria-label="Complaint severity distribution">Medium severity is most common at 45%.</canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title"><div class="card-title-left"><span class="card-dot blue"></span>Monthly Complaint Trend &amp; CAPA Closure Rate</div></div>
+      <div class="legend">
+        <div class="legend-item"><div class="legend-swatch" style="background:var(--red)"></div>Complaints</div>
+        <div class="legend-item"><div class="legend-swatch" style="background:var(--green)"></div>CAPA Closure %</div>
+      </div>
+      <div class="chart-wrap" style="height:200px"><canvas id="c-capa" role="img" aria-label="Monthly complaint trend with CAPA closure rate">Complaints declining as CAPA closure rate improves.</canvas></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><div class="card-title-left"><span class="card-dot green"></span>Recent QC Results — Top Batches</div></div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Batch No</th><th>Product</th><th>Moisture%</th><th>pH</th><th>Microbial CFU</th><th>Sensory</th><th>Weight (g)</th><th>Result</th></tr></thead>
+        <tbody id="qc-table"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ MAINTENANCE ═══════════ -->
+<div id="tab-maintenance" class="panel">
+  <div class="kpi-row">
+    <div class="kpi amber"><div class="kpi-label">Avg MTBF (hrs)</div><div class="kpi-val">842h</div><div class="kpi-change up">&#9650; +18h</div></div>
+    <div class="kpi green"><div class="kpi-label">Avg MTTR (hrs)</div><div class="kpi-val">3.2h</div><div class="kpi-change up">&#9650; Improved</div></div>
+    <div class="kpi red"><div class="kpi-label">Emergency Repairs</div><div class="kpi-val">24</div><div class="kpi-change down">&#9660; +3 MoM</div></div>
+    <div class="kpi blue"><div class="kpi-label">Repair Cost (BDT)</div><div class="kpi-val">4.2M</div><div class="kpi-change up">&#9650; -8%</div></div>
+    <div class="kpi purple"><div class="kpi-label">Preventive %</div><div class="kpi-val">62.4%</div><div class="kpi-change up">&#9650; +4.1%</div></div>
+  </div>
+
+  <div class="charts-row charts-2">
+    <div class="card">
+      <div class="card-title"><div class="card-title-left"><span class="card-dot amber"></span>Maintenance Type Distribution</div></div>
+      <div class="chart-wrap" style="height:220px"><canvas id="c-maint-type" role="img" aria-label="Maintenance type distribution">Preventive is 62%, corrective 25%, emergency 13%.</canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title"><div class="card-title-left"><span class="card-dot red"></span>Downtime Hours by Machine</div></div>
+      <div class="chart-wrap" style="height:220px"><canvas id="c-maint-dt" role="img" aria-label="Downtime hours by machine">M-103 has highest downtime at 42 hours this month.</canvas></div>
+    </div>
+  </div>
+
+  <div class="charts-row charts-2">
+    <div class="card">
+      <div class="card-title"><div class="card-title-left"><span class="card-dot blue"></span>Failure Type Breakdown</div></div>
+      <div class="chart-wrap" style="height:200px"><canvas id="c-failure" role="img" aria-label="Failure type breakdown">Mechanical failures are most common at 42%.</canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title"><div class="card-title-left"><span class="card-dot green"></span>Repair Cost Trend (Monthly BDT '000)</div></div>
+      <div class="chart-wrap" style="height:200px"><canvas id="c-repair-cost" role="img" aria-label="Monthly repair cost trend">Costs peaked in March and declining since.</canvas></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ ENERGY ═══════════ -->
+<div id="tab-energy" class="panel">
+  <div class="kpi-row">
+    <div class="kpi cyan"><div class="kpi-label">Electricity kWh/kg</div><div class="kpi-val">0.52</div><div class="kpi-change up">&#9650; -3.1%</div></div>
+    <div class="kpi amber"><div class="kpi-label">Monthly kWh (M)</div><div class="kpi-val">1.84M</div><div class="kpi-change neutral">+1.2%</div></div>
+    <div class="kpi green"><div class="kpi-label">Water L/kg</div><div class="kpi-val">3.8</div><div class="kpi-change up">&#9650; -5%</div></div>
+    <div class="kpi red"><div class="kpi-label">CO₂ Tonnes/mo</div><div class="kpi-val">148t</div><div class="kpi-change up">&#9650; -2%</div></div>
+    <div class="kpi blue"><div class="kpi-label">Energy Cost (BDT)</div><div class="kpi-val">6.2M</div><div class="kpi-change up">&#9650; -4%</div></div>
+  </div>
+
+  <div class="charts-row charts-2">
+    <div class="card">
+      <div class="card-title"><div class="card-title-left"><span class="card-dot cyan"></span>Energy Consumption Trend</div></div>
+      <div class="legend">
+        <div class="legend-item"><div class="legend-swatch" style="background:var(--cyan)"></div>Electricity (kWh)</div>
+        <div class="legend-item"><div class="legend-swatch" style="background:var(--amber)"></div>Gas (m³)</div>
+        <div class="legend-item"><div class="legend-swatch" style="background:var(--blue)"></div>Water (m³)</div>
+      </div>
+      <div class="chart-wrap" style="height:230px"><canvas id="c-energy-trend" role="img" aria-label="Energy consumption trend by type">Electricity and gas consumption showing gradual decline.</canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title"><div class="card-title-left"><span class="card-dot amber"></span>Energy per kg by Line</div></div>
+      <div class="chart-wrap" style="height:230px"><canvas id="c-energy-line" role="img" aria-label="Energy per kg by production line">Line-3 most efficient at 0.44 kWh/kg.</canvas></div>
+    </div>
+  </div>
+
+  <div class="charts-row charts-2">
+    <div class="card">
+      <div class="card-title"><div class="card-title-left"><span class="card-dot green"></span>Shift-wise Energy Efficiency</div></div>
+      <div class="chart-wrap" style="height:200px"><canvas id="c-energy-shift" role="img" aria-label="Energy efficiency by shift">Morning shift is most energy efficient.</canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title"><div class="card-title-left"><span class="card-dot red"></span>CO₂ Emissions Monthly</div></div>
+      <div class="chart-wrap" style="height:200px"><canvas id="c-co2" role="img" aria-label="Monthly CO2 emissions trend">CO2 emissions declining year-over-year.</canvas></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ SALES ═══════════ -->
+<div id="tab-sales" class="panel">
+  <div class="kpi-row">
+    <div class="kpi green"><div class="kpi-label">Total Revenue (BDT)</div><div class="kpi-val">294M</div><div class="kpi-change up">&#9650; +8.2%</div></div>
+    <div class="kpi amber"><div class="kpi-label">Gross Margin</div><div class="kpi-val">31.4%</div><div class="kpi-change up">&#9650; +1.8pp</div></div>
+    <div class="kpi blue"><div class="kpi-label">Forecast Accuracy</div><div class="kpi-val">87.3%</div><div class="kpi-change up">&#9650; +2.1%</div></div>
+    <div class="kpi red"><div class="kpi-label">Returns Rate</div><div class="kpi-val">0.9%</div><div class="kpi-change up">&#9650; Improved</div></div>
+    <div class="kpi purple"><div class="kpi-label">Top Region</div><div class="kpi-val">Dhaka</div><div class="kpi-change neutral">38% share</div></div>
+  </div>
+
+  <div class="charts-row charts-2">
+    <div class="card">
+      <div class="card-title"><div class="card-title-left"><span class="card-dot green"></span>Monthly Revenue &amp; Margin Trend</div></div>
+      <div class="legend">
+        <div class="legend-item"><div class="legend-swatch" style="background:var(--green)"></div>Revenue (M BDT)</div>
+        <div class="legend-item"><div class="legend-swatch" style="background:var(--amber)"></div>Gross Margin %</div>
+      </div>
+      <div class="chart-wrap" style="height:230px"><canvas id="c-revenue" role="img" aria-label="Monthly revenue and gross margin trend">Revenue growing with margin improvement trend.</canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title"><div class="card-title-left"><span class="card-dot blue"></span>Sales by Region</div></div>
+      <div class="chart-wrap" style="height:230px"><canvas id="c-region" role="img" aria-label="Sales distribution by region">Dhaka and Chittagong represent 60% of total sales.</canvas></div>
+    </div>
+  </div>
+
+  <div class="charts-row charts-2">
+    <div class="card">
+      <div class="card-title"><div class="card-title-left"><span class="card-dot amber"></span>Product Revenue Contribution</div></div>
+      <div class="chart-wrap" style="height:200px"><canvas id="c-prod-rev" role="img" aria-label="Revenue contribution by product">Digestive Biscuit and Mango Drink lead revenue.</canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title"><div class="card-title-left"><span class="card-dot purple"></span>Demand vs Forecast Accuracy</div></div>
+      <div class="chart-wrap" style="height:200px"><canvas id="c-forecast" role="img" aria-label="Demand vs forecast comparison">Forecast accuracy improved to 87% from 82% last year.</canvas></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ FOOD SAFETY ═══════════ -->
+<div id="tab-safety" class="panel">
+  <div class="kpi-row">
+    <div class="kpi green"><div class="kpi-label">Avg Audit Score</div><div class="kpi-val">91.3%</div><div class="kpi-change up">&#9650; +2.4%</div></div>
+    <div class="kpi amber"><div class="kpi-label">CCP Compliance</div><div class="kpi-val">97.8%</div><div class="kpi-change up">&#9650; +0.6%</div></div>
+    <div class="kpi red"><div class="kpi-label">Non-Conformances</div><div class="kpi-val">18</div><div class="kpi-change up">&#9650; -22%</div></div>
+    <div class="kpi blue"><div class="kpi-label">Hygiene Score</div><div class="kpi-val">88.4%</div><div class="kpi-change up">&#9650; +1.2%</div></div>
+    <div class="kpi purple"><div class="kpi-label">FSMS Certificate</div><div class="kpi-val">Valid</div><div class="kpi-change neutral">12 months</div></div>
+  </div>
+
+  <div class="charts-row charts-2">
+    <div class="card">
+      <div class="card-title"><div class="card-title-left"><span class="card-dot green"></span>Audit Score by Area</div></div>
+      <div class="chart-wrap" style="height:220px"><canvas id="c-audit-area" role="img" aria-label="Audit score by production area">Lab and production hall have highest scores above 92%.</canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title"><div class="card-title-left"><span class="card-dot amber"></span>Audit Type Distribution</div></div>
+      <div class="chart-wrap" style="height:220px"><canvas id="c-audit-type" role="img" aria-label="Distribution of audit types">Internal audits are most frequent at 45%.</canvas></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><div class="card-title-left"><span class="card-dot blue"></span>CCP Temperature Monitoring — Cooking Line (°C)</div></div>
+    <div class="chart-wrap" style="height:200px"><canvas id="c-ccp" role="img" aria-label="CCP temperature monitoring showing control limits">All readings within UCL 95°C and LCL 72°C control limits.</canvas></div>
+  </div>
+</div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+const months12=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const months24=[...months12.map(m=>m+"'23"),...months12.map(m=>m+"'24")];
+const machines=['M-101','M-102','M-103','M-104','M-105','M-106'];
+const shifts=['Morning','Evening','Night'];
+const products=['Digestive','Cream Cracker','Choco Wafer','Salted Chips','Milk Powder','Juice','Mango Drink','Energy Bar'];
+const lines=['Line-1','Line-2','Line-3','Line-4'];
+const regions=['Dhaka','Chittagong','Sylhet','Rajshahi','Khulna'];
+
+const amber='#f5a623',amber2='#ffc85c',green='#2ecc71',green2='#55e891',
+      red='#e74c3c',red2='#ff6b5e',blue='#4a9eff',blue2='#7dbeff',
+      purple='#a78bfa',cyan='#22d3ee',text2='#9ba8c4',border='#2a3354';
+
+const defOpts={responsive:true,maintainAspectRatio:false,
+  plugins:{legend:{display:false},tooltip:{backgroundColor:'#1e2536',titleColor:'#f0f2f8',bodyColor:'#9ba8c4',borderColor:'#2a3354',borderWidth:1}},
+  scales:{x:{grid:{color:'rgba(42,51,84,.5)'},ticks:{color:text2,font:{size:10}}},
+          y:{grid:{color:'rgba(42,51,84,.5)'},ticks:{color:text2,font:{size:10}}}}};
+
+function rnd(lo,hi){return +(lo+(hi-lo)*Math.random()).toFixed(1)}
+function arr(n,lo,hi){return Array.from({length:n},()=>rnd(lo,hi))}
+
+function mkChart(id,type,labels,datasets,extraOpts={}){
+  const el=document.getElementById(id);
+  if(!el)return;
+  new Chart(el,{type,data:{labels,datasets},
+    options:{...defOpts,...extraOpts,
+      plugins:{...defOpts.plugins,...(extraOpts.plugins||{})}}});
+}
+
+const oeeData=arr(24,68,90);
+const effData=arr(24,80,97);
+const yldData=arr(24,88,97);
+
+mkChart('c-oee-trend','line',months24,[
+  {label:'OEE %',data:oeeData,borderColor:amber,backgroundColor:'rgba(245,166,35,.08)',tension:.4,borderWidth:2,pointRadius:2,fill:true},
+  {label:'Efficiency %',data:effData,borderColor:blue,backgroundColor:'rgba(74,158,255,.05)',tension:.4,borderWidth:2,pointRadius:2,fill:true},
+  {label:'Yield %',data:yldData,borderColor:green,backgroundColor:'rgba(46,204,113,.05)',tension:.4,borderWidth:2,pointRadius:2,fill:true}
+],{plugins:{legend:{display:false}}});
+
+mkChart('c-prod-pie','doughnut',products,
+  [{data:[22,14,12,11,10,13,11,7],
+    backgroundColor:['#f5a623','#4a9eff','#2ecc71','#e74c3c','#a78bfa','#22d3ee','#f39c12','#9ba8c4'],
+    borderColor:'#1e2536',borderWidth:2,hoverOffset:6}],
+  {plugins:{legend:{display:true,position:'right',labels:{color:text2,font:{size:10},boxWidth:10}}},scales:{x:{display:false},y:{display:false}}});
+
+mkChart('c-dt-reason','doughnut',['Breakdown','Setup','Planned Maint','Mat. Shortage','Operator','Power Fail','Quality Hold'],
+  [{data:[34,22,18,10,7,6,3],
+    backgroundColor:['#e74c3c','#f5a623','#4a9eff','#a78bfa','#22d3ee','#2ecc71','#9ba8c4'],
+    borderColor:'#1e2536',borderWidth:2,hoverOffset:6}],
+  {plugins:{legend:{display:true,position:'right',labels:{color:text2,font:{size:10},boxWidth:10}}},scales:{x:{display:false},y:{display:false}}});
+
+const dailyOut=arr(30,900,1800);
+mkChart('c-daily-output','line',Array.from({length:30},(_,i)=>`D${i+1}`),
+  [{data:dailyOut,borderColor:amber,backgroundColor:'rgba(245,166,35,.1)',tension:.3,borderWidth:2,pointRadius:2,fill:true}],{});
+
+const oeeMach=[87.4,82.1,71.3,68.9,79.6,85.2];
+mkChart('c-oee-machine','bar',machines,
+  [{data:oeeMach,backgroundColor:oeeMach.map(v=>v>=85?green:v>=75?amber:red),borderRadius:4}],
+  {plugins:{legend:{display:false}}});
+
+mkChart('c-shift','bar',['Output kg/hr','OEE %','Yield %','Quality Pass%'],
+  [{label:'Morning',data:[428,82,94,97],backgroundColor:amber+'cc',borderRadius:3},
+   {label:'Evening',data:[398,78,92,96],backgroundColor:blue+'cc',borderRadius:3},
+   {label:'Night',data:[372,74,89,95],backgroundColor:purple+'cc',borderRadius:3}],
+  {plugins:{legend:{display:true,labels:{color:text2,font:{size:10},boxWidth:8}}}});
+
+mkChart('c-waste-prod','bar',products,
+  [{data:[3.1,2.8,6.2,4.5,2.1,1.8,3.4,4.8],
+    backgroundColor:products.map((_,i)=>[amber,blue,red,amber,green,cyan,blue,purple][i]+'cc'),borderRadius:4}],{});
+
+// Heatmap
+const hm=document.getElementById('heatmap-prod');
+const hmLabels=['M-101','M-102','M-103','M-104','M-105','M-106'];
+const hmShifts=['Morning','Evening','Night'];
+const hmData=[[84,88,72,70,80,86],[78,82,68,65,76,80],[72,76,62,60,70,74]];
+function hmColor(v){return v>=85?'#27ae60':v>=80?'#2ecc71':v>=75?'#f39c12':v>=70?'#e67e22':v>=65?'#c0392b':'#7b1818'}
+function hmText(v){return v>=80?'#1a4731':v>=70?'#7d4e00':'#f0f2f8'}
+if(hm){
+  hm.innerHTML='<div class="hm-header"></div>'+hmLabels.map(m=>`<div class="hm-header">${m}</div>`).join('');
+  hmShifts.forEach((sh,si)=>{
+    hm.innerHTML+=`<div class="hm-label">${sh}</div>`;
+    hmLabels.forEach((_,mi)=>{
+      const v=hmData[si][mi];
+      hm.innerHTML+=`<div class="hm-cell" style="background:${hmColor(v)};color:${hmText(v)}">${v}%</div>`;
+    });
+  });
+}
+
+const passData=[228,142,118,98,87,106,110,72];
+const failData=[5,4,8,6,3,4,5,4];
+mkChart('c-qc-pass','bar',products,
+  [{label:'Pass',data:passData,backgroundColor:green+'bb',borderRadius:3},
+   {label:'Fail',data:failData,backgroundColor:red+'bb',borderRadius:3}],
+  {plugins:{legend:{display:true,labels:{color:text2,font:{size:10},boxWidth:8}}}});
+
+const paretoTypes=['Packaging Defect','Off Flavor','Foreign Material','Weight Short','Texture Issue','Mold','Color Issue'];
+const paretoCounts=[38,24,16,10,7,3,2];
+const cumulativePct=paretoCounts.reduce((a,v,i)=>{const s=i>0?a[i-1]:0;a.push(+(s+v/100*100).toFixed(0));return a;},[]);
+mkChart('c-pareto','bar',paretoTypes,
+  [{label:'Count',data:paretoCounts,backgroundColor:amber+'cc',borderRadius:3,yAxisID:'y'},
+   {label:'Cumulative%',data:[38,62,78,88,95,98,100],type:'line',borderColor:red,borderWidth:2,pointRadius:3,fill:false,yAxisID:'y2'}],
+  {plugins:{legend:{display:true,labels:{color:text2,font:{size:10},boxWidth:8}}},
+   scales:{x:{grid:{color:'rgba(42,51,84,.5)'},ticks:{color:text2,font:{size:10},maxRotation:30}},
+           y:{grid:{color:'rgba(42,51,84,.5)'},ticks:{color:text2,font:{size:10}}},
+           y2:{position:'right',min:0,max:100,grid:{display:false},ticks:{color:text2,font:{size:10},callback:v=>v+'%'}}}});
+
+mkChart('c-severity','doughnut',['Critical','High','Medium','Low'],
+  [{data:[8,22,45,25],backgroundColor:[red,amber,blue,green],borderColor:'#1e2536',borderWidth:2,hoverOffset:6}],
+  {plugins:{legend:{display:true,position:'right',labels:{color:text2,font:{size:10},boxWidth:10}}},scales:{x:{display:false},y:{display:false}}});
+
+const compTrend=arr(12,15,55);
+const capaRate=arr(12,72,98);
+mkChart('c-capa','line',months12,
+  [{label:'Complaints',data:compTrend,borderColor:red,backgroundColor:'rgba(231,76,60,.08)',tension:.4,borderWidth:2,pointRadius:3,fill:true,yAxisID:'y'},
+   {label:'CAPA %',data:capaRate,borderColor:green,tension:.4,borderWidth:2,pointRadius:3,fill:false,yAxisID:'y2'}],
+  {plugins:{legend:{display:false}},
+   scales:{x:{grid:{color:'rgba(42,51,84,.5)'},ticks:{color:text2,font:{size:10}}},
+           y:{grid:{color:'rgba(42,51,84,.5)'},ticks:{color:text2,font:{size:10}}},
+           y2:{position:'right',grid:{display:false},ticks:{color:text2,font:{size:10},callback:v=>v+'%'}}}});
+
+const qcRows=[
+  ['B47821','Digestive Biscuit','8.2','6.1','120','8.4','24.98','Fail'],
+  ['B47815','Choco Wafer','4.8','6.8','80','8.9','25.01','Pass'],
+  ['B47810','Cream Cracker','5.1','7.0','45','8.2','25.02','Pass'],
+  ['B47808','Mango Drink','6.3','4.2','210','7.8','250.10','Pass'],
+  ['B47803','Salted Chips','3.9','6.5','60','8.6','30.05','Pass'],
+  ['B47799','Energy Bar','4.2','6.9','30','9.1','45.00','Pass'],
+];
+const tb=document.getElementById('qc-table');
+if(tb)qcRows.forEach(r=>{
+  const res=r[7];
+  tb.innerHTML+=`<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td><td>${r[4]}</td><td>${r[5]}</td><td>${r[6]}</td><td><span class="pill ${res==='Pass'?'pill-green':'pill-red'}">${res}</span></td></tr>`;
+});
+
+mkChart('c-maint-type','doughnut',['Preventive','Corrective','Predictive','Emergency'],
+  [{data:[62,18,7,13],backgroundColor:[green,amber,blue,red],borderColor:'#1e2536',borderWidth:2,hoverOffset:6}],
+  {plugins:{legend:{display:true,position:'right',labels:{color:text2,font:{size:10},boxWidth:10}}},scales:{x:{display:false},y:{display:false}}});
+
+mkChart('c-maint-dt','bar',machines,
+  [{data:[24,18,42,38,22,16],backgroundColor:machines.map((_,i)=>[green,blue,red,red,amber,blue][i]+'cc'),borderRadius:4}],{});
+
+mkChart('c-failure','doughnut',['Mechanical','Electrical','Hydraulic','Pneumatic','None'],
+  [{data:[42,28,14,11,5],backgroundColor:[red,amber,blue,purple,text2],borderColor:'#1e2536',borderWidth:2,hoverOffset:6}],
+  {plugins:{legend:{display:true,position:'right',labels:{color:text2,font:{size:10},boxWidth:10}}},scales:{x:{display:false},y:{display:false}}});
+
+mkChart('c-repair-cost','line',months12,
+  [{data:arr(12,180,650),borderColor:amber,backgroundColor:'rgba(245,166,35,.1)',tension:.3,borderWidth:2,pointRadius:3,fill:true}],{});
+
+mkChart('c-energy-trend','line',months12,
+  [{label:'Elec kWh',data:arr(12,800,1400),borderColor:cyan,tension:.4,borderWidth:2,pointRadius:2,fill:false},
+   {label:'Gas m³',data:arr(12,150,380),borderColor:amber,tension:.4,borderWidth:2,pointRadius:2,fill:false},
+   {label:'Water m³',data:arr(12,30,75),borderColor:blue,tension:.4,borderWidth:2,pointRadius:2,fill:false}],
+  {plugins:{legend:{display:false}}});
+
+mkChart('c-energy-line','bar',lines,
+  [{data:[0.56,0.58,0.44,0.52],backgroundColor:[amber,red,green,blue].map(c=>c+'cc'),borderRadius:4}],{});
+
+mkChart('c-energy-shift','bar',['Morning','Evening','Night'],
+  [{data:[0.48,0.54,0.62],backgroundColor:[green,amber,red].map(c=>c+'cc'),borderRadius:4}],{});
+
+mkChart('c-co2','line',months12,
+  [{data:arr(12,120,180),borderColor:red,backgroundColor:'rgba(231,76,60,.1)',tension:.3,borderWidth:2,pointRadius:3,fill:true}],{});
+
+const revData=arr(12,18,35);
+const marData=arr(12,25,40);
+mkChart('c-revenue','bar',months12,
+  [{label:'Revenue',data:revData,backgroundColor:green+'88',borderRadius:3,yAxisID:'y'},
+   {label:'Margin%',data:marData,type:'line',borderColor:amber,borderWidth:2,pointRadius:3,fill:false,yAxisID:'y2'}],
+  {plugins:{legend:{display:false}},
+   scales:{x:{grid:{color:'rgba(42,51,84,.5)'},ticks:{color:text2,font:{size:10}}},
+           y:{grid:{color:'rgba(42,51,84,.5)'},ticks:{color:text2,font:{size:10}}},
+           y2:{position:'right',grid:{display:false},ticks:{color:text2,font:{size:10},callback:v=>v+'%'}}}});
+
+mkChart('c-region','bar',regions,
+  [{data:[112,82,44,32,24],backgroundColor:[amber,blue,green,purple,cyan].map(c=>c+'cc'),borderRadius:4}],{});
+
+mkChart('c-prod-rev','bar',products,
+  [{data:[58,34,42,28,24,48,52,8],backgroundColor:products.map((_,i)=>[amber,blue,green,red,purple,cyan,amber,text2][i]+'cc'),borderRadius:4}],{});
+
+mkChart('c-forecast','line',months12,
+  [{label:'Actual',data:arr(12,8000,45000),borderColor:green,tension:.4,borderWidth:2,pointRadius:3,fill:false},
+   {label:'Forecast',data:arr(12,8000,45000),borderColor:amber,borderDash:[5,4],tension:.4,borderWidth:2,pointRadius:3,fill:false}],
+  {plugins:{legend:{display:true,labels:{color:text2,font:{size:10},boxWidth:8}}}});
+
+const areaScores=[92.4,94.1,88.6,85.2,90.3,87.8];
+const areaNames=['Prod Hall','Warehouse','Lab','Canteen','Cold Store','Packaging'];
+mkChart('c-audit-area','bar',areaNames,
+  [{data:areaScores,backgroundColor:areaScores.map(v=>v>=90?green:v>=85?amber:red).map(c=>c+'cc'),borderRadius:4}],{});
+
+mkChart('c-audit-type','doughnut',['Internal','External','HACCP','GMP','FSMS'],
+  [{data:[45,22,14,12,7],backgroundColor:[blue,amber,green,purple,cyan],borderColor:'#1e2536',borderWidth:2,hoverOffset:6}],
+  {plugins:{legend:{display:true,position:'right',labels:{color:text2,font:{size:10},boxWidth:10}}},scales:{x:{display:false},y:{display:false}}});
+
+const ccpData=Array.from({length:30},(_,i)=>({x:i+1,y:rnd(73,94)}));
+const ucl=Array(30).fill(95);const lcl=Array(30).fill(72);
+mkChart('c-ccp','line',Array.from({length:30},(_,i)=>`S${i+1}`),
+  [{label:'Temp°C',data:ccpData.map(d=>d.y),borderColor:cyan,backgroundColor:'rgba(34,211,238,.08)',tension:.3,borderWidth:2,pointRadius:2,fill:true},
+   {label:'UCL 95°C',data:ucl,borderColor:red+'88',borderDash:[4,3],borderWidth:1.5,pointRadius:0,fill:false},
+   {label:'LCL 72°C',data:lcl,borderColor:amber+'88',borderDash:[4,3],borderWidth:1.5,pointRadius:0,fill:false}],
+  {plugins:{legend:{display:true,labels:{color:text2,font:{size:10},boxWidth:8}}}});
+
+function switchTab(name){
+  document.querySelectorAll('.tab').forEach((t,i)=>{
+    const n=['overview','production','quality','maintenance','energy','sales','safety'][i];
+    t.classList.toggle('active',n===name);
+  });
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  const el=document.getElementById('tab-'+name);
+  if(el)el.classList.add('active');
+}
+
+const ts=document.getElementById('liveTs');
+function tick(){
+  const now=new Date();
+  if(ts)ts.textContent=now.toLocaleString('en-BD',{hour12:false});
+}
+tick();setInterval(tick,1000);
+</script>
