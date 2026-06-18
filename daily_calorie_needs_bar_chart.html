@@ -1,0 +1,50 @@
+<h2 class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Grouped bar chart of daily calorie needs in kilocalories by age group, comparing low, moderate, and high activity levels</h2>
+<div style="display:flex;flex-wrap:wrap;gap:16px;margin-bottom:10px;font-size:12px;color:var(--color-text-secondary)">
+<span style="display:flex;align-items:center;gap:6px"><span style="width:11px;height:11px;border-radius:2px;background:#B5D4F4"></span>Low activity (sedentary)</span>
+<span style="display:flex;align-items:center;gap:6px"><span style="width:11px;height:11px;border-radius:2px;background:#185FA5"></span>Moderate activity</span>
+<span style="display:flex;align-items:center;gap:6px"><span style="width:11px;height:11px;border-radius:2px;background:#D85A30"></span>High activity (active)</span>
+</div>
+<div style="position:relative;width:100%;height:440px">
+<canvas id="calChart" role="img" aria-label="Grouped bar chart of daily calorie needs in kilocalories by age group and activity level">Daily calorie needs in kcal by age group: Toddlers 1-3 yrs 1000/1200/1400, Kids 4-8 yrs 1300/1500/1800, Boys 9-13 yrs 1800/2200/2600, Girls 9-13 yrs 1600/1900/2300, Teen boys 14-18 yrs 2400/2800/3200, Teen girls 14-18 yrs 1800/2100/2400, Men 19-50 yrs 2400/2600/2900, Women 19-50 yrs 1800/2000/2200, Older men 51+ yrs 2100/2300/2600, Older women 51+ yrs 1700/1900/2100 for low/moderate/high activity respectively.</canvas>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"></script>
+<script>
+Chart.register(ChartDataLabels);
+new Chart(document.getElementById('calChart'), {
+  type: 'bar',
+  data: {
+    labels: [['Toddlers','(1–3 yrs)'],['Kids','(4–8 yrs)'],['Boys','(9–13 yrs)'],['Girls','(9–13 yrs)'],['Teen boys','(14–18 yrs)'],['Teen girls','(14–18 yrs)'],['Men','(19–50 yrs)'],['Women','(19–50 yrs)'],['Older men','(51+ yrs)'],['Older women','(51+ yrs)']],
+    datasets: [
+      { label: 'Low activity', data: [1000,1300,1800,1600,2400,1800,2400,1800,2100,1700], backgroundColor: '#B5D4F4', borderRadius: 4, maxBarThickness: 26 },
+      { label: 'Moderate activity', data: [1200,1500,2200,1900,2800,2100,2600,2000,2300,1900], backgroundColor: '#185FA5', borderRadius: 4, maxBarThickness: 26 },
+      { label: 'High activity', data: [1400,1800,2600,2300,3200,2400,2900,2200,2600,2100], backgroundColor: '#D85A30', borderRadius: 4, maxBarThickness: 26 }
+    ]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      datalabels: {
+        anchor: 'end',
+        align: 'top',
+        offset: 2,
+        font: { size: 10 },
+        color: '#5f5e5a',
+        formatter: (v) => v.toLocaleString()
+      }
+    },
+    scales: {
+      x: { ticks: { color: '#73726c', font: { size: 11 } }, grid: { display: false } },
+      y: {
+        beginAtZero: true,
+        max: 3500,
+        ticks: { color: '#73726c', font: { size: 11 }, stepSize: 500, callback: (v) => v.toLocaleString() },
+        grid: { color: 'rgba(136,135,128,0.2)' },
+        title: { display: true, text: 'Daily calories (kcal)', color: '#73726c', font: { size: 12 } }
+      }
+    }
+  }
+});
+</script>
